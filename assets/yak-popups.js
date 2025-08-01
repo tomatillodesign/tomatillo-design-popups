@@ -55,6 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
         popup.removeAttribute('hidden');
         document.body.classList.add('yak-popup--active');
         console.info('[Yak Popups] Popup shown.');
+
+        // Re-initialize Gravity Forms if available
+        if (typeof window.gform !== 'undefined' && typeof window.gform.initializeOnLoadedForm === 'function') {
+            popup.querySelectorAll('form[id^="gform_"]').forEach(form => {
+                window.gform.initializeOnLoadedForm(form.id);
+            });
+            console.info('[Yak Popups] Gravity Forms reinitialized.');
+        }
     }
 
     // Hide popup + store dismissal
