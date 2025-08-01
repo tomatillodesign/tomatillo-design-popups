@@ -36,40 +36,47 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(storageKey, JSON.stringify({ expire }));
     }
 
-    function showPopup() {
-        popup.classList.add('yak-popup--active');
-        document.body.classList.add('yak-popup--active');
-        console.info('[Yak Popups] Popup shown.');
+function showPopup() {
+    popup.classList.add('yak-popup--active');
+    document.body.classList.add('yak-popup--active');
+    console.info('[Yak Popups] Popup shown.');
 
-        // Force GF wrapper visible, retry until it's no longer hidden
-        const gfWrappers = popup.querySelectorAll('.gform_wrapper');
-        if (gfWrappers.length) {
-            const fixGF = (attempts = 0) => {
-                gfWrappers.forEach(wrapper => {
+    // Force only the main GF wrapper visible, retry until it's no longer hidden
+    const gfWrappers = popup.querySelectorAll('.gform_wrapper');
+    if (gfWrappers.length) {
+        const fixGF = (attempts = 0) => {
+            gfWrappers.forEach(wrapper => {
+                const computedStyle = window.getComputedStyle(wrapper);
+                if (computedStyle.display === 'none') {
+                    // Safely override just the display property
+                    wrapper.style.removeProperty('display');
                     wrapper.style.display = 'block';
-                    wrapper.removeAttribute('style'); // strip inline display:none
+                    console.info('[Yak Popups] Forcing GF wrapper visible');
+                }
+            });
+
+            // Trigger GF conditional logic scripts
+            if (typeof gform !== 'undefined' && typeof gform.doAction === 'function') {
+                const forms = popup.querySelectorAll('form[id^="gform_"]');
+                forms.forEach(form => {
+                    const formId = form.getAttribute('data-formid');
+                    if (formId) {
+                        gform.doAction('gform_post_render', formId, formId);
+                        console.info('[Yak Popups] gform_post_render triggered for form ' + formId);
+                    }
                 });
+            }
 
-                if (typeof gform !== 'undefined' && typeof gform.doAction === 'function') {
-                    const forms = popup.querySelectorAll('form[id^="gform_"]');
-                    forms.forEach(form => {
-                        const formId = form.getAttribute('data-formid');
-                        if (formId) {
-                            gform.doAction('gform_post_render', formId, formId);
-                            console.info('[Yak Popups] gform_post_render triggered for form ' + formId);
-                        }
-                    });
-                }
+            // Retry a few times in case GF re-applies display:none
+            if (attempts < 5) {
+                setTimeout(() => fixGF(attempts + 1), 300);
+            }
+        };
 
-                // Retry if still hidden (GF can re-apply display:none)
-                if (attempts < 5) {
-                    setTimeout(() => fixGF(attempts + 1), 300);
-                }
-            };
-
-            fixGF();
-        }
+        fixGF();
     }
+}
+
 
     function hidePopup() {
         popup.classList.remove('yak-popup--active');
