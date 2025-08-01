@@ -45,6 +45,9 @@
           background-size: cover;
           background-position: center;
           background-repeat: no-repeat;
+
+          /* ensure inner stays visible even if GF tries to hide */
+          display: block;
      }
 
      .yak-popup__close {
@@ -104,7 +107,6 @@
      .yak-popup__content {
           flex: 1 1 60%;
           padding: 2rem;
-          background: var(--yak-color-white, #fff);
           display: flex;
           flex-direction: column;
           justify-content: center;

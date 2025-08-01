@@ -36,20 +36,30 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(storageKey, JSON.stringify({ expire }));
     }
 
-    function showPopup() {
+   function showPopup() {
         popup.classList.add('yak-popup--active');
         document.body.classList.add('yak-popup--active');
         console.info('[Yak Popups] Popup shown.');
 
-        // Trigger GF conditional logic reinit
+        // Force GF wrapper visible
+        const gfWrappers = popup.querySelectorAll('.gform_wrapper');
+        gfWrappers.forEach(wrapper => {
+            wrapper.style.display = 'block';
+        });
+
+        // Trigger GF conditional logic scripts
         if (typeof gform !== 'undefined' && typeof gform.doAction === 'function') {
             const forms = popup.querySelectorAll('form[id^="gform_"]');
             forms.forEach(form => {
-                gform.doAction('gform_post_render', form.getAttribute('data-formid'), form.getAttribute('data-formid'));
+                const formId = form.getAttribute('data-formid');
+                if (formId) {
+                    gform.doAction('gform_post_render', formId, formId);
+                    console.info('[Yak Popups] gform_post_render triggered for form ' + formId);
+                }
             });
-            console.info('[Yak Popups] gform_post_render triggered.');
         }
     }
+
 
     function hidePopup() {
         popup.classList.remove('yak-popup--active');
