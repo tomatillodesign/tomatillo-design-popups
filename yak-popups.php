@@ -72,3 +72,10 @@ add_filter( 'body_class', function( $classes ) {
     }
     return $classes;
 });
+
+
+add_action( 'wp_enqueue_scripts', function() {
+    if ( class_exists( 'GFForms' ) ) {
+        GFForms::enqueue_scripts();
+    }
+});
