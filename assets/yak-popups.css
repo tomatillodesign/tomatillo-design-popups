@@ -1,0 +1,144 @@
+@layer yak-components {
+     .yak-popup {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          font-family: var(--yak-primary-font, system-ui);
+     }
+
+     .yak-popup[hidden] {
+          display: none;
+     }
+
+     .yak-popup__overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.6);
+          cursor: pointer;
+     }
+
+     .yak-popup__inner {
+        position: relative;
+        z-index: 10000;
+        max-width: 900px;
+        width: 90%;
+        border-radius: var(--yak-radius, 6px);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        padding: 0;
+        overflow: hidden;
+
+        /* Let inline background-image shine through */
+        background-color: var(--yak-color-white, #fff); /* fallback if no image */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+     .yak-popup__close {
+          position: absolute;
+          top: 0.75rem;
+          right: 0.75rem;
+          font-size: 1.5rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--yak-color-black, #000);
+          z-index: 10001;
+     }
+
+     /* Shared content styling */
+     .yak-popup__title {
+          font-size: var(--yak-font-xl, 1.5rem);
+          line-height: var(--yak-lh-xl, 1.3);
+          margin-top: 0;
+          margin-bottom: 1rem;
+     }
+
+     .yak-popup__body {
+          font-size: var(--yak-font-md, 1rem);
+          line-height: var(--yak-lh-md, 1.65);
+          margin-bottom: 1rem;
+     }
+
+     .yak-popup__form {
+          margin-top: 1rem;
+     }
+
+     /* Layout: Single Panel */
+     .yak-popup--single .yak-popup__content {
+          text-align: center;
+          padding: 2rem;
+     }
+
+     /* Layout: Image Left / Image Right */
+     .yak-popup__layout {
+          display: flex;
+          align-items: stretch;
+          justify-content: center;
+          gap: 0;
+          height: 100%;
+     }
+
+     .yak-popup__side-image {
+          flex: 1 1 50%;
+          display: flex;
+     }
+
+     .yak-popup__side-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 0;
+     }
+
+     .yak-popup__content {
+          flex: 1 1 50%;
+          padding: 2rem;
+          /* background: var(--yak-color-white, #fff); */
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+     }
+
+     /* Image Right flips order on desktop */
+     .yak-popup--image_right .yak-popup__layout {
+          flex-direction: row-reverse;
+     }
+
+     /* Lock body scroll when popup active */
+     body.yak-popup--active {
+          overflow: hidden;
+     }
+
+     /* Responsive: stack + reorder for mobile */
+     @media (max-width: 768px) {
+          .yak-popup__layout {
+               flex-direction: column;
+          }
+
+          .yak-popup--image_left .yak-popup__layout {
+               flex-direction: column; /* image naturally stacks on top */
+          }
+
+          .yak-popup--image_right .yak-popup__layout {
+               flex-direction: column-reverse; /* image goes below content */
+          }
+
+          .yak-popup__side-image {
+               flex: none;
+               width: 100%;
+               height: 200px; /* fixed height for mobile */
+          }
+
+          .yak-popup__content {
+               flex: none;
+               width: 100%;
+          }
+     }
+}
