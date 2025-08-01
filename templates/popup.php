@@ -22,7 +22,7 @@ $content    = $settings['content'] ?? '';
 $form       = $settings['form'] ?? '';
 ?>
 
-<div class="yak-popup yak-popup--<?php echo esc_attr( $format ); ?>" id="yak-popup" role="dialog" aria-modal="true" aria-labelledby="yak-popup-title" hidden>
+<div class="yak-popup yak-popup--<?php echo esc_attr( $format ); ?>" id="yak-popup" role="dialog" aria-modal="true" aria-labelledby="yak-popup-title">
      <div class="yak-popup__overlay"></div>
 
      <div class="yak-popup__inner" style="<?php echo $bg_image ? 'background-image:url(' . esc_url( $bg_image ) . ');' : ''; ?>">
