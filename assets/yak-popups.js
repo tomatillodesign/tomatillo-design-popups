@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    
+
 function showPopup() {
     popup.classList.add('yak-popup--active');
     document.body.classList.add('yak-popup--active');
@@ -74,12 +74,18 @@ function showPopup() {
                     const formId = form.getAttribute('data-formid');
                     if (formId) {
                         gform.doAction('gform_post_render', formId, formId);
-                        console.info(`[Yak Popups] gform_post_render triggered for form ${formId}.`);
+                        console.info(`[Yak Popups] gform_post_render triggered for form ${formId}`);
+
+                        if (typeof window.gf_apply_rules === 'function') {
+                            jQuery(document).trigger('gform_post_render', [formId, formId]);
+                            console.info(`[Yak Popups] gf_apply_rules executed for form ${formId}`);
+                        } else {
+                            console.warn('[Yak Popups] gf_apply_rules still not found.');
+                        }
                     }
                 });
-            } else {
-                console.warn('[Yak Popups] gform object not found — Gravity Forms scripts may not be loaded.');
             }
+
 
             // Retry in case GF re-applies display:none
             if (attempts < 5) {
