@@ -36,47 +36,64 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(storageKey, JSON.stringify({ expire }));
     }
 
+
+    
 function showPopup() {
     popup.classList.add('yak-popup--active');
     document.body.classList.add('yak-popup--active');
     console.info('[Yak Popups] Popup shown.');
 
-    // Force only the main GF wrapper visible, retry until it's no longer hidden
     const gfWrappers = popup.querySelectorAll('.gform_wrapper');
     if (gfWrappers.length) {
+        console.info(`[Yak Popups] Found ${gfWrappers.length} Gravity Forms wrapper(s) inside popup.`);
+
         const fixGF = (attempts = 0) => {
-            gfWrappers.forEach(wrapper => {
+            gfWrappers.forEach((wrapper, i) => {
                 const computedStyle = window.getComputedStyle(wrapper);
+
+                // Ensure wrapper is visible
                 if (computedStyle.display === 'none') {
-                    // Safely override just the display property
-                    wrapper.style.removeProperty('display');
                     wrapper.style.display = 'block';
-                    console.info('[Yak Popups] Forcing GF wrapper visible');
+                    console.info(`[Yak Popups] GF wrapper #${i + 1} forced visible.`);
+                }
+
+                // Log the number of hidden conditional fields for debugging
+                const hiddenFields = wrapper.querySelectorAll('.gfield[style*="display: none"]');
+                console.info(`[Yak Popups] GF wrapper #${i + 1} contains ${hiddenFields.length} hidden field(s).`);
+
+                const conditionallyHidden = wrapper.querySelectorAll('.gfield.gfield_visibility_hidden');
+                if (conditionallyHidden.length) {
+                    console.warn(`[Yak Popups] ${conditionallyHidden.length} conditional field(s) currently hidden as expected.`);
                 }
             });
 
-            // Trigger GF conditional logic scripts
+            // Trigger Gravity Forms post-render hook
             if (typeof gform !== 'undefined' && typeof gform.doAction === 'function') {
                 const forms = popup.querySelectorAll('form[id^="gform_"]');
                 forms.forEach(form => {
                     const formId = form.getAttribute('data-formid');
                     if (formId) {
                         gform.doAction('gform_post_render', formId, formId);
-                        console.info('[Yak Popups] gform_post_render triggered for form ' + formId);
+                        console.info(`[Yak Popups] gform_post_render triggered for form ${formId}.`);
                     }
                 });
+            } else {
+                console.warn('[Yak Popups] gform object not found — Gravity Forms scripts may not be loaded.');
             }
 
-            // Retry a few times in case GF re-applies display:none
+            // Retry in case GF re-applies display:none
             if (attempts < 5) {
                 setTimeout(() => fixGF(attempts + 1), 300);
+            } else {
+                console.info('[Yak Popups] Completed Gravity Forms wrapper visibility checks.');
             }
         };
 
         fixGF();
+    } else {
+        console.warn('[Yak Popups] No Gravity Forms wrapper found inside popup.');
     }
 }
-
 
     function hidePopup() {
         popup.classList.remove('yak-popup--active');
