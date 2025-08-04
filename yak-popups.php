@@ -74,8 +74,32 @@ add_filter( 'body_class', function( $classes ) {
 });
 
 
+/**
+ * Enqueue Gravity Forms scripts for the popup form.
+ */
 add_action( 'wp_enqueue_scripts', function() {
-    if ( class_exists( 'GFForms' ) ) {
-        GFForms::enqueue_scripts();
+    if ( ! class_exists( 'GFForms' ) ) {
+        return;
     }
-});
+
+    // Get the form shortcode from ACF (stored in Yak Popups settings)
+    $form_shortcode = get_field( 'yak_popup_form_shortcode', 'option' );
+
+    if ( $form_shortcode && preg_match( '/id=["\']?(\d+)["\']?/', $form_shortcode, $matches ) ) {
+        $form_id = absint( $matches[1] );
+
+        if ( $form_id ) {
+            // Load core GF scripts
+            GFForms::enqueue_scripts();
+
+            // Load scripts for this specific form (includes conditional logic)
+            gravity_form_enqueue_scripts( $form_id, true );
+
+            // Optional: log for debugging
+            if ( WP_DEBUG ) {
+                error_log( "[Yak Popups] Enqueued GF scripts for form ID {$form_id}" );
+            }
+        }
+    }
+}, 20 );
+
