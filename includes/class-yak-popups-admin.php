@@ -13,6 +13,7 @@ class Yak_Popups_Admin {
 
 	public function __construct() {
 		add_action( 'acf/init', [ $this, 'register_fields' ] );
+		add_action( 'acf/input/admin_head', [ $this, 'add_nonce_field' ] );
 	}
 
 	/**
@@ -261,6 +262,25 @@ class Yak_Popups_Admin {
 				],
 			],
 		] );
+	}
+
+	/**
+	 * Add nonce field to ACF options page for security.
+	 */
+	public function add_nonce_field() {
+		$screen = get_current_screen();
+		if ( $screen && strpos( $screen->id, 'yak-popups-settings' ) !== false ) {
+			wp_nonce_field( 'yak_popups_admin_nonce', 'yak_popups_nonce' );
+		}
+	}
+
+	/**
+	 * Verify nonce for admin actions.
+	 */
+	public static function verify_nonce() {
+		if ( ! isset( $_POST['yak_popups_nonce'] ) || ! wp_verify_nonce( $_POST['yak_popups_nonce'], 'yak_popups_admin_nonce' ) ) {
+			wp_die( __( 'Security check failed. Please try again.', 'yak-popups' ) );
+		}
 	}
 }
 

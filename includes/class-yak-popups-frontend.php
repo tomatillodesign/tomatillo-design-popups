@@ -24,9 +24,15 @@ class Yak_Popups_Frontend {
 			return;
 		}
 
+		// Get all popup fields in a single call for better performance
+		$fields = get_fields( 'option' );
+		if ( ! $fields ) {
+			return;
+		}
+
 		// Allow admins to preview when disabled if Test Mode is on.
-		$enabled   = (bool) get_field( 'yak_popup_enable', 'option' );
-		$test_mode = (bool) get_field( 'yak_popup_test_mode', 'option' );
+		$enabled   = (bool) ( $fields['yak_popup_enable'] ?? false );
+		$test_mode = (bool) ( $fields['yak_popup_test_mode'] ?? false );
 
 		if ( ! $enabled ) {
 			// If popup is disabled, only render when Test Mode is enabled AND user can manage options.
@@ -36,20 +42,20 @@ class Yak_Popups_Frontend {
 		}
 
 		// Core fields.
-		$title       = (string) get_field( 'yak_popup_title', 'option' );
-		$content     = (string) get_field( 'yak_popup_content', 'option' );
-		$bg_image    = (string) get_field( 'yak_popup_bg', 'option' );
-		$format      = (string) get_field( 'yak_popup_format', 'option' );
-		$side_image  = (string) get_field( 'yak_popup_side_image', 'option' );
+		$title       = (string) ( $fields['yak_popup_title'] ?? '' );
+		$content     = (string) ( $fields['yak_popup_content'] ?? '' );
+		$bg_image    = (string) ( $fields['yak_popup_bg'] ?? '' );
+		$format      = (string) ( $fields['yak_popup_format'] ?? 'single' );
+		$side_image  = (string) ( $fields['yak_popup_side_image'] ?? '' );
 
 		// Behavior.
-		$trigger      = (string) get_field( 'yak_popup_trigger', 'option' );
-		$delay        = (int)    get_field( 'yak_popup_delay', 'option' );
-		$dismiss_days = (int)    get_field( 'yak_popup_dismiss_days', 'option' );
+		$trigger      = (string) ( $fields['yak_popup_trigger'] ?? 'delay' );
+		$delay        = (int)    ( $fields['yak_popup_delay'] ?? 5 );
+		$dismiss_days = (int)    ( $fields['yak_popup_dismiss_days'] ?? 7 );
 		$show_test    = (bool)   $test_mode; // already fetched above
 
 		// Action selector.
-		$action = (string) get_field( 'yak_popup_action', 'option' );
+		$action = (string) ( $fields['yak_popup_action'] ?? 'none' );
 		if ( $action !== 'button' && $action !== 'form' ) {
 			$action = 'none';
 		}
@@ -64,14 +70,14 @@ class Yak_Popups_Frontend {
 		];
 
 		if ( 'form' === $action ) {
-			$form_shortcode = (string) get_field( 'yak_popup_form_shortcode', 'option' );
+			$form_shortcode = (string) ( $fields['yak_popup_form_shortcode'] ?? '' );
 			if ( $form_shortcode ) {
 				$form_html = do_shortcode( $form_shortcode );
 			}
 		} elseif ( 'button' === $action ) {
-			$btn_text   = (string) get_field( 'yak_popup_btn_text', 'option' );
-			$btn_url    = (string) get_field( 'yak_popup_btn_url', 'option' );
-			$btn_target = (string) get_field( 'yak_popup_btn_target', 'option' ); // 'same' | 'new'
+			$btn_text   = (string) ( $fields['yak_popup_btn_text'] ?? '' );
+			$btn_url    = (string) ( $fields['yak_popup_btn_url'] ?? '' );
+			$btn_target = (string) ( $fields['yak_popup_btn_target'] ?? 'same' ); // 'same' | 'new'
 
 			$button['text']   = $btn_text;
 			$button['url']    = $btn_url ? esc_url_raw( $btn_url ) : '';

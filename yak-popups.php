@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Tomatillo Design ~ Popups
  * Description:       Lightweight popup system for Yak theme sites. Supports background image, title, text, and Gravity Forms embed. Simple JS state management (localStorage).
- * Version:           1.1
+ * Version:           1.2
  * Author:            Chris Liu-Beers @ Tomatillo Design
  * Author URI:        https://www.tomatillodesign.com
  * Text Domain:       yak-popups
@@ -30,15 +30,45 @@ require_once YAK_POPUPS_DIR . 'includes/integrations/class-yak-popups-tracklight
 
 
 /**
- * Enqueue frontend assets.
+ * Check if popup assets should be loaded.
+ */
+function yak_popups_should_load_assets() {
+	// Always load in admin for preview
+	if ( is_admin() ) {
+		return true;
+	}
+
+	// Check if popup is enabled
+	if ( function_exists( 'get_fields' ) ) {
+		$fields = get_fields( 'option' );
+		if ( $fields ) {
+			$enabled = (bool) ( $fields['yak_popup_enable'] ?? false );
+			$test_mode = (bool) ( $fields['yak_popup_test_mode'] ?? false );
+			
+			// Load if enabled OR if test mode is on for admins
+			if ( $enabled || ( $test_mode && current_user_can( 'manage_options' ) ) ) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Enqueue frontend assets conditionally.
  */
 add_action( 'wp_enqueue_scripts', function() {
+	if ( ! yak_popups_should_load_assets() ) {
+		return;
+	}
+
 	// CSS
 	wp_enqueue_style(
 		'yak-popups',
 		YAK_POPUPS_URL . 'assets/yak-popups.css',
 		[],
-		'1.0.0'
+		'1.2'
 	);
 
 	// JS
@@ -46,7 +76,7 @@ add_action( 'wp_enqueue_scripts', function() {
 		'yak-popups',
 		YAK_POPUPS_URL . 'assets/yak-popups.js',
 		[],
-		'1.0.0',
+		'1.2',
 		true
 	);
 } );
@@ -80,12 +110,17 @@ add_filter( 'body_class', function( $classes ) {
  * Enqueue Gravity Forms scripts for the popup form.
  */
 add_action( 'wp_enqueue_scripts', function() {
+    if ( ! yak_popups_should_load_assets() ) {
+        return;
+    }
+
     if ( ! class_exists( 'GFForms' ) ) {
         return;
     }
 
     // Get the form shortcode from ACF (stored in Yak Popups settings)
-    $form_shortcode = get_field( 'yak_popup_form_shortcode', 'option' );
+    $fields = get_fields( 'option' );
+    $form_shortcode = $fields['yak_popup_form_shortcode'] ?? '';
 
     if ( $form_shortcode && preg_match( '/id=["\']?(\d+)["\']?/', $form_shortcode, $matches ) ) {
         $form_id = absint( $matches[1] );
