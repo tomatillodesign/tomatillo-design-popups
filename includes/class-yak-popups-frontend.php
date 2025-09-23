@@ -49,10 +49,11 @@ class Yak_Popups_Frontend {
 		$side_image  = (string) ( $fields['yak_popup_side_image'] ?? '' );
 
 		// Behavior.
-		$trigger      = (string) ( $fields['yak_popup_trigger'] ?? 'delay' );
-		$delay        = (int)    ( $fields['yak_popup_delay'] ?? 5 );
-		$dismiss_days = (int)    ( $fields['yak_popup_dismiss_days'] ?? 7 );
-		$show_test    = (bool)   $test_mode; // already fetched above
+		$trigger         = (string) ( $fields['yak_popup_trigger'] ?? 'delay' );
+		$delay           = (int)    ( $fields['yak_popup_delay'] ?? 5 );
+		$scroll_percent  = (int)    ( $fields['yak_popup_scroll_percent'] ?? 50 );
+		$dismiss_days    = (int)    ( $fields['yak_popup_dismiss_days'] ?? 7 );
+		$show_test       = (bool)   $test_mode; // already fetched above
 
 		// Action selector.
 		$action = (string) ( $fields['yak_popup_action'] ?? 'none' );
@@ -100,10 +101,11 @@ class Yak_Popups_Frontend {
 			'button'         => $button,            // ['text','url','target']
 
 			// Behavior
-			'trigger'      => $trigger ?: 'delay',
-			'delay'        => max( 0, $delay ),
-			'dismiss_days' => max( 0, $dismiss_days ),
-			'show_test'    => $show_test ? 1 : 0,
+			'trigger'        => $trigger ?: 'delay',
+			'delay'          => max( 1, min( 60, $delay ) ),
+			'scroll_percent' => max( 10, min( 90, $scroll_percent ) ),
+			'dismiss_days'   => max( 1, min( 365, $dismiss_days ) ),
+			'show_test'      => $show_test ? 1 : 0,
 		];
 
 		/**

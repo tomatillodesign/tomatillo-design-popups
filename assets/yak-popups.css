@@ -36,6 +36,7 @@
           z-index: 10000;
           max-width: 900px;
           width: 90%;
+          max-height: 90vh;
           border-radius: var(--yak-radius, 6px);
           box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
           padding: 0;
@@ -60,6 +61,41 @@
           cursor: pointer;
           color: var(--yak-color-black, #000);
           z-index: 10001;
+          transition: all 0.2s ease;
+     }
+
+     /* Mobile-optimized close button */
+     @media (max-width: 768px) {
+          .yak-popup__close {
+               /* WCAG compliant touch target - minimum 44px */
+               min-width: 44px;
+               min-height: 44px;
+               font-size: 1.8rem;
+               
+               /* Enhanced visibility */
+               background: rgba(255, 255, 255, 0.95);
+               border-radius: 50%;
+               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+               
+               /* Better positioning for mobile */
+               top: 0.5rem;
+               right: 0.5rem;
+               
+               /* Ensure proper centering */
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               
+               /* Touch feedback */
+               -webkit-tap-highlight-color: transparent;
+          }
+          
+          .yak-popup__close:hover,
+          .yak-popup__close:active {
+               background: rgba(255, 255, 255, 1);
+               transform: scale(1.05);
+               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          }
      }
 
      .yak-popup__title {
@@ -82,6 +118,14 @@
      .yak-popup--single .yak-popup__content {
           text-align: center;
           padding: 2rem;
+     }
+
+     /* Scrolling container for popup content */
+     .yak-popup__scroll-container {
+          max-height: calc(90vh - 4rem);
+          overflow-y: auto;
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
      }
 
      .yak-popup__layout {
@@ -121,8 +165,21 @@
      }
 
      @media (max-width: 768px) {
+          /* Mobile popup sizing */
+          .yak-popup__inner {
+               width: 95%;
+               max-height: 85vh;
+               margin: 2.5vh auto;
+          }
+          
+          /* Mobile scrolling container */
+          .yak-popup__scroll-container {
+               max-height: calc(85vh - 4rem);
+          }
+          
           .yak-popup__layout {
                flex-direction: column;
+               height: 100%;
           }
 
           .yak-popup--image_left .yak-popup__layout {
@@ -140,8 +197,26 @@
           }
 
           .yak-popup__content {
-               flex: none;
+               flex: 1;
                width: 100%;
+               overflow-y: auto;
+               -webkit-overflow-scrolling: touch;
+          }
+          
+          /* Single layout mobile adjustments */
+          .yak-popup--single .yak-popup__content {
+               padding: 1.5rem;
+               text-align: center;
+               overflow-y: auto;
+               -webkit-overflow-scrolling: touch;
+          }
+          
+          /* Ensure close button is always accessible */
+          .yak-popup__close {
+               position: fixed;
+               top: 1rem;
+               right: 1rem;
+               z-index: 10002;
           }
      }
 }

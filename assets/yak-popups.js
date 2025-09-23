@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const configEl = document.getElementById('yak-popups-config');
     if (!configEl) {
+        // Always show this warning as it indicates a configuration issue
         console.warn('[Yak Popups] No config found.');
         return;
     }
@@ -11,9 +12,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeBtn = popup.querySelector('.yak-popup__close');
     const overlay = popup.querySelector('.yak-popup__overlay');
-    const storageKey = 'yakPopupDismissed';
+    const storageKey = 'yak_popups_dismissed_v1_2';
     const now = Date.now();
     const isAdmin = document.body.classList.contains('role-administrator');
+    const isTestMode = config.show_test && isAdmin;
+
+    // Console logging helper - only log in test mode
+    const log = (message, type = 'info') => {
+        if (isTestMode) {
+            console[type](`[Yak Popups] ${message}`);
+        }
+    };
 
     function getStored() {
         const data = localStorage.getItem(storageKey);
@@ -39,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showPopup() {
         popup.classList.add('yak-popup--active');
         document.body.classList.add('yak-popup--active');
-        console.info('[Yak Popups] Popup shown.');
+        log('Popup shown.');
 
         const gfWrappers = popup.querySelectorAll('.gform_wrapper');
         if (gfWrappers.length) {
@@ -48,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const computedStyle = window.getComputedStyle(wrapper);
                     if (computedStyle.display === 'none') {
                         wrapper.style.display = 'block';
-                        console.info(`[Yak Popups] GF wrapper #${i + 1} forced visible.`);
+                        log(`GF wrapper #${i + 1} forced visible.`);
                     }
 
                     const forms = wrapper.querySelectorAll('form[id^="gform_"]');
@@ -58,15 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Fire Gravity Forms hooks
                             if (typeof gform !== 'undefined' && typeof gform.doAction === 'function') {
                                 gform.doAction('gform_post_render', formId, formId);
-                                console.info(`[Yak Popups] gform_post_render triggered for form ${formId}.`);
+                                log(`gform_post_render triggered for form ${formId}.`);
                             }
 
                             // Apply conditional logic if available
                             if (typeof window.gf_apply_rules === 'function') {
                                 window.gf_apply_rules(formId, [], true);
-                                console.info(`[Yak Popups] gf_apply_rules applied for form ${formId}.`);
+                                log(`gf_apply_rules applied for form ${formId}.`);
                             } else {
-                                console.warn('[Yak Popups] gf_apply_rules not available yet.');
+                                log('gf_apply_rules not available yet.', 'warn');
                             }
                         }
                     });
@@ -76,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (attempts < 5) {
                     setTimeout(() => fixGF(attempts + 1), 300);
                 } else {
-                    console.info('[Yak Popups] GF initialization attempts complete.');
+                    log('GF initialization attempts complete.');
                 }
             };
 
@@ -89,17 +98,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('yak-popup--active');
         if (!(config.show_test && isAdmin)) {
             setStored(config.dismiss_days || 7);
-            console.info('[Yak Popups] Popup dismissed (saved).');
+            log('Popup dismissed (saved).');
         } else {
-            console.info('[Yak Popups] Popup dismissed (Test Mode — not saved).');
+            log('Popup dismissed (Test Mode — not saved).');
         }
     }
 
     // Test mode override
     if (config.show_test && isAdmin) {
-        console.info('[Yak Popups] Test mode enabled — forcing popup for admin.');
+        log('Test mode enabled — forcing popup for admin.');
     } else if (getStored()) {
-        console.info('[Yak Popups] Popup previously dismissed.');
+        log('Popup previously dismissed.');
         return;
     }
 
@@ -116,12 +125,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(showPopup, delay);
     } else if (config.trigger === 'scroll') {
         let shown = false;
+        const scrollThreshold = config.scroll_percent || 50;
+        
         window.addEventListener('scroll', () => {
             if (shown) return;
             const scrollPercent = (window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100;
-            if (scrollPercent > 50) {
+            if (scrollPercent > scrollThreshold) {
                 showPopup();
                 shown = true;
+                log(`Popup triggered at ${Math.round(scrollPercent)}% scroll (threshold: ${scrollThreshold}%)`);
             }
         });
     }

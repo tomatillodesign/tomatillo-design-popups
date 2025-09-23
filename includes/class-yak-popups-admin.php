@@ -218,7 +218,7 @@ class Yak_Popups_Admin {
 					'choices'       => [
 						'load'   => __( 'On Page Load', 'yak-popups' ),
 						'delay'  => __( 'After Delay', 'yak-popups' ),
-						'scroll' => __( 'After Scrolling %', 'yak-popups' ),
+						'scroll' => __( 'After Scrolling', 'yak-popups' ),
 					],
 					'default_value' => 'delay',
 					'ui'            => 1,
@@ -230,6 +230,8 @@ class Yak_Popups_Admin {
 					'type'             => 'number',
 					'default_value'    => 5,
 					'min'              => 1,
+					'max'              => 60,
+					'step'             => 1,
 					'append'           => 's',
 					'conditional_logic' => [
 						[
@@ -242,13 +244,37 @@ class Yak_Popups_Admin {
 					],
 				],
 				[
+					'key'              => 'field_yak_popup_scroll_percent',
+					'label'            => __( 'Scroll Percentage', 'yak-popups' ),
+					'name'             => 'yak_popup_scroll_percent',
+					'type'             => 'number',
+					'default_value'    => 50,
+					'min'              => 10,
+					'max'              => 90,
+					'step'             => 5,
+					'append'           => '%',
+					'instructions'     => __( 'Show popup when user scrolls this percentage down the page.', 'yak-popups' ),
+					'conditional_logic' => [
+						[
+							[
+								'field'    => 'field_yak_popup_trigger',
+								'operator' => '==',
+								'value'    => 'scroll',
+							],
+						],
+					],
+				],
+				[
 					'key'           => 'field_yak_popup_dismiss_days',
 					'label'         => __( 'Hide After Dismissal (days)', 'yak-popups' ),
 					'name'          => 'yak_popup_dismiss_days',
 					'type'          => 'number',
 					'default_value' => 7,
 					'min'           => 1,
+					'max'           => 365,
+					'step'          => 1,
 					'append'        => 'days',
+					'instructions'  => __( 'How many days to hide popup after user dismisses it.', 'yak-popups' ),
 				],
 
 			],

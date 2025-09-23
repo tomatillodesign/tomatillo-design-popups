@@ -40,10 +40,11 @@ class Yak_Popups_Tracklight_Integration {
 		add_filter( 'acf/update_value/name=yak_popup_btn_target',      [ $this, 'on_field_change' ], 20, 3 );
 
 		// Behavior.
-		add_filter( 'acf/update_value/name=yak_popup_trigger',      [ $this, 'on_field_change' ], 20, 3 );
-		add_filter( 'acf/update_value/name=yak_popup_delay',        [ $this, 'on_field_change' ], 20, 3 );
-		add_filter( 'acf/update_value/name=yak_popup_dismiss_days', [ $this, 'on_field_change' ], 20, 3 );
-		add_filter( 'acf/update_value/name=yak_popup_test_mode',    [ $this, 'on_field_change' ], 20, 3 );
+		add_filter( 'acf/update_value/name=yak_popup_trigger',        [ $this, 'on_field_change' ], 20, 3 );
+		add_filter( 'acf/update_value/name=yak_popup_delay',          [ $this, 'on_field_change' ], 20, 3 );
+		add_filter( 'acf/update_value/name=yak_popup_scroll_percent', [ $this, 'on_field_change' ], 20, 3 );
+		add_filter( 'acf/update_value/name=yak_popup_dismiss_days',   [ $this, 'on_field_change' ], 20, 3 );
+		add_filter( 'acf/update_value/name=yak_popup_test_mode',      [ $this, 'on_field_change' ], 20, 3 );
 	}
 
 	/**
@@ -151,10 +152,11 @@ class Yak_Popups_Tracklight_Integration {
 			'yak_popup_btn_text',
 			'yak_popup_btn_url',
 			'yak_popup_btn_target'    => 'popup_button_changed',
-			'yak_popup_trigger'       => 'popup_trigger_changed',
-			'yak_popup_delay'         => 'popup_delay_changed',
-			'yak_popup_dismiss_days'  => 'popup_dismiss_days_changed',
-			'yak_popup_test_mode'     => 'popup_test_mode_changed',
+			'yak_popup_trigger'        => 'popup_trigger_changed',
+			'yak_popup_delay'          => 'popup_delay_changed',
+			'yak_popup_scroll_percent' => 'popup_scroll_percent_changed',
+			'yak_popup_dismiss_days'   => 'popup_dismiss_days_changed',
+			'yak_popup_test_mode'      => 'popup_test_mode_changed',
 			default                   => 'popup_settings_changed',
 		};
 	}

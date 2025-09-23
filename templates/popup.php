@@ -41,51 +41,14 @@ $dialog_aria = $title
 
 	<div class="yak-popup__inner" style="<?php echo esc_attr( $inner_style ); ?>">
 
+		<!-- Enhanced close button with mobile-optimized touch targets -->
 		<button type="button" class="yak-popup__close" aria-label="<?php esc_attr_e( 'Close popup', 'yak-popups' ); ?>">&times;</button>
 
-		<?php if ( $format === 'single' ) : ?>
+		<!-- Scrolling container for content -->
+		<div class="yak-popup__scroll-container">
+			<?php if ( $format === 'single' ) : ?>
 
-			<div class="yak-popup__content">
-				<?php if ( $title ) : ?>
-					<h2 class="yak-popup__title" id="yak-popup-title"><?php echo esc_html( $title ); ?></h2>
-				<?php endif; ?>
-
-				<?php if ( $content ) : ?>
-					<div class="yak-popup__body">
-						<?php echo wp_kses_post( $content ); ?>
-					</div>
-				<?php endif; ?>
-
-				<?php
-				// Action rendering (single layout)
-				if ( $action === 'form' && $form_html ) : ?>
-					<div class="yak-popup__form">
-						<?php echo $form_html; // already do_shortcode'd in frontend class ?>
-					</div>
-				<?php elseif ( $action === 'button' && ! empty( $button['text'] ) && ! empty( $button['url'] ) ) :
-					$target = ( isset( $button['target'] ) && $button['target'] === '_blank' ) ? '_blank' : '_self';
-					$rel    = ( $target === '_blank' ) ? ' rel="noopener"' : '';
-					?>
-					<div class="yak-popup__cta">
-						<a class="yak-popup__btn button"
-						   href="<?php echo esc_url( $button['url'] ); ?>"
-						   target="<?php echo esc_attr( $target ); ?>"<?php echo $rel; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-							<?php echo esc_html( $button['text'] ); ?>
-						</a>
-					</div>
-				<?php endif; ?>
-			</div>
-
-		<?php elseif ( $format === 'image_left' || $format === 'image_right' ) : ?>
-
-			<div class="yak-popup__layout">
-				<?php if ( $side_image ) : ?>
-					<div class="yak-popup__side-image">
-						<img src="<?php echo esc_url( $side_image ); ?>" alt="" />
-					</div>
-				<?php endif; ?>
-
-				<div class="yak-popup__content <?php echo $side_image ? '' : 'yak-popup__content--full'; ?>">
+				<div class="yak-popup__content">
 					<?php if ( $title ) : ?>
 						<h2 class="yak-popup__title" id="yak-popup-title"><?php echo esc_html( $title ); ?></h2>
 					<?php endif; ?>
@@ -97,10 +60,10 @@ $dialog_aria = $title
 					<?php endif; ?>
 
 					<?php
-					// Action rendering (image split layouts)
+					// Action rendering (single layout)
 					if ( $action === 'form' && $form_html ) : ?>
 						<div class="yak-popup__form">
-							<?php echo $form_html; // already do_shortcode'd ?>
+							<?php echo $form_html; // already do_shortcode'd in frontend class ?>
 						</div>
 					<?php elseif ( $action === 'button' && ! empty( $button['text'] ) && ! empty( $button['url'] ) ) :
 						$target = ( isset( $button['target'] ) && $button['target'] === '_blank' ) ? '_blank' : '_self';
@@ -115,9 +78,50 @@ $dialog_aria = $title
 						</div>
 					<?php endif; ?>
 				</div>
-			</div>
 
-		<?php endif; ?>
+			<?php elseif ( $format === 'image_left' || $format === 'image_right' ) : ?>
+
+				<div class="yak-popup__layout">
+					<?php if ( $side_image ) : ?>
+						<div class="yak-popup__side-image">
+							<img src="<?php echo esc_url( $side_image ); ?>" alt="" />
+						</div>
+					<?php endif; ?>
+
+					<div class="yak-popup__content <?php echo $side_image ? '' : 'yak-popup__content--full'; ?>">
+						<?php if ( $title ) : ?>
+							<h2 class="yak-popup__title" id="yak-popup-title"><?php echo esc_html( $title ); ?></h2>
+						<?php endif; ?>
+
+						<?php if ( $content ) : ?>
+							<div class="yak-popup__body">
+								<?php echo wp_kses_post( $content ); ?>
+							</div>
+						<?php endif; ?>
+
+						<?php
+						// Action rendering (image split layouts)
+						if ( $action === 'form' && $form_html ) : ?>
+							<div class="yak-popup__form">
+								<?php echo $form_html; // already do_shortcode'd ?>
+							</div>
+						<?php elseif ( $action === 'button' && ! empty( $button['text'] ) && ! empty( $button['url'] ) ) :
+							$target = ( isset( $button['target'] ) && $button['target'] === '_blank' ) ? '_blank' : '_self';
+							$rel    = ( $target === '_blank' ) ? ' rel="noopener"' : '';
+							?>
+							<div class="yak-popup__cta">
+								<a class="yak-popup__btn button"
+								   href="<?php echo esc_url( $button['url'] ); ?>"
+								   target="<?php echo esc_attr( $target ); ?>"<?php echo $rel; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+									<?php echo esc_html( $button['text'] ); ?>
+								</a>
+							</div>
+						<?php endif; ?>
+					</div>
+				</div>
+
+			<?php endif; ?>
+		</div>
 
 	</div>
 </div>
