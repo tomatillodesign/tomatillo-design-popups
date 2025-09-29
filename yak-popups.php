@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Tomatillo Design ~ Popups
  * Description:       Lightweight popup system for Yak theme sites. Supports background image, title, text, and Gravity Forms embed. Simple JS state management (localStorage).
- * Version:           1.2
+ * Version:           1.2.1
  * Author:            Chris Liu-Beers @ Tomatillo Design
  * Author URI:        https://www.tomatillodesign.com
  * Text Domain:       yak-popups
